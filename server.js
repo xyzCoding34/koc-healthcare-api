@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
 import { verifyToken, getUserIdFromToken, loginUser } from "./auth.js";
-import { createHeartRateRecord } from "./db.js";
+import { createHeartRateRecord, createOxygenLevelRecord } from "./db.js";
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Send heart rate notifications to ThingsBoard
 app.post("/api/heart-rate", async (req, res) => {
-  const { rate } = req.body;
+  const { value } = req.body;
   const token = req.headers["authorization"]?.split(" ")[1];
 
   if (!token) {
@@ -41,7 +41,7 @@ app.post("/api/heart-rate", async (req, res) => {
     const response = await axios.post(
       url,
       {
-        "rate": Number(rate), 
+        "value": Number(value), 
       },
       {
         headers: {
@@ -57,7 +57,61 @@ app.post("/api/heart-rate", async (req, res) => {
       return res.status(401).json({message: "Geçersiz token."});
     }
 
-    await createHeartRateRecord(userId, rate)
+    await createHeartRateRecord(userId, value)
+
+    res.status(200).json({
+      message: "Veri başarılı şekilde gönderildi!",
+      response: response.data,
+    });
+
+  } catch (error) {
+    console.error("Hata:", error);
+    res.status(500).json({
+      message: "Server hatası.",
+      error: error.message,
+    });
+  }
+});
+
+// Send oxygen level notifications to ThingsBoard
+app.post("/api/oxygen-level", async (req, res) => {
+  const { value } = req.body;
+  const token = req.headers["authorization"]?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Token bulunamadı" });
+  }
+
+  try {
+    verifyToken(token);
+  } catch (error) {
+    return res.status(401).json({ message: error.message });
+  }
+
+  const url = process.env.OXYGEN_LEVEL_URL;
+
+  // prettier-ignore
+  try {
+    const response = await axios.post(
+      url,
+      {
+        "value": Number(value), 
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, 
+        },
+      }
+    );
+
+    const userId = getUserIdFromToken(token);
+
+    if(!userId) {
+      return res.status(401).json({message: "Geçersiz token."});
+    }
+
+    await createOxygenLevelRecord(userId, value)
 
     res.status(200).json({
       message: "Veri başarılı şekilde gönderildi!",
@@ -83,11 +137,15 @@ app.post("/api/login", async (req, res) => {
   }
 
   try {
-    const { token, first_name } = await loginUser(user_name, password);
+    const { token, first_name, profile_group } = await loginUser(
+      user_name,
+      password
+    );
     return res.status(200).json({
       message: "Giriş başarılı",
       token,
       first_name,
+      profile_group,
     });
   } catch (err) {
     console.error("Login hatası:", err);

@@ -61,10 +61,15 @@ export const loginUser = async (user_name, password) => {
       user_id: user.id,
       user_name: user.user_name,
       first_name: user.first_name,
+      profile_group: user.profile_group,
     },
     process.env.JWT_SECRET_KEY,
     { expiresIn: "1h" }
   );
 
-  return { token, first_name: user.first_name };
+  return {
+    token,
+    first_name: user.first_name,
+    profile_group: user.profile_group,
+  };
 };
