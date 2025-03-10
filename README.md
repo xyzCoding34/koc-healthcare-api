@@ -7,6 +7,8 @@ Uygulama, AWS Ubuntu sunucusunda canlı olarak yayınlanmaktadır.
 
 🌐 **Canlı Demo Linki**: [http://3.8.198.10](http://3.8.198.10)
 
+🌐 **Public Dashboard Linki**: [https://eu.thingsboard.cloud/dashboard/b2b0d870-fc42-11ef-b246-25c828565e3d?publicId=7eb02e20-fc85-11ef-b042-c1cb5c011377](https://eu.thingsboard.cloud/dashboard/b2b0d870-fc42-11ef-b246-25c828565e3d?publicId=7eb02e20-fc85-11ef-b042-c1cb5c011377)
+
 ---
 
 ## 🚀 Proje Amacı
