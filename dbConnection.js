@@ -8,6 +8,7 @@ const pool = new Pool({
   password: "123321",
   port: 5432,
   keepAlive: true,
+  ssl: { rejectUnauthorized: false }, // SSL kullanımı
   connectionTimeoutMillis: 5000,
 });
 
