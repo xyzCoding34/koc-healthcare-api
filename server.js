@@ -10,7 +10,8 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-  origin: "*",
+  // origin: "*",
+  origin: "https://easysolutionhub.com",
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
