@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import fs from "fs";
+import https from "https";
 import dotenv from "dotenv";
 import axios from "axios";
 import { verifyToken, getUserIdFromToken, loginUser } from "./auth.js";
@@ -8,6 +10,13 @@ import { createHeartRateRecord, createOxygenLevelRecord } from "./db.js";
 dotenv.config();
 
 const app = express();
+
+// SSL sertifikaları
+const privateKey = fs.readFileSync(process.env.PRIVATE_KEY_PATH, "utf8");
+const certificate = fs.readFileSync(process.env.CERTIFICATE_PATH, "utf8");
+const ca = fs.readFileSync(process.env.CA_PATH, "utf8");
+
+const credentials = { key: privateKey, cert: certificate, ca: ca };
 
 const corsOptions = {
   // origin: "*",
@@ -169,6 +178,6 @@ app.post("/api/login", async (req, res) => {
 });
 
 const port = 3000;
-app.listen(port, () => {
-  console.log(`Sunucu http://localhost:${port} adresinde çalışıyor.`);
+https.createServer(credentials, app).listen(port, () => {
+  console.log(`HTTPS sunucu https://localhost:${port} adresinde çalışıyor.`);
 });
