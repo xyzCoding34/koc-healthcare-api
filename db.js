@@ -1,5 +1,7 @@
 import client from "./dbConnection.js";
 
+const test = 'asdasdasd';
+
 export const createHeartRateRecord = async (userId, rate) => {
   try {
     const insertQuery = `
